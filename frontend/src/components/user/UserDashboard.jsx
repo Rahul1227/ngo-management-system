@@ -122,7 +122,7 @@ const UserDashboard = () => {
           </Card>
 
           <Card className="hover:shadow-xl transition-shadow cursor-pointer" hover={false}>
-            <Link to="/user/history" className="block">
+            <Link to="/user/donations" className="block">
               <div className="flex items-center space-x-4">
                 <div className="p-4 bg-secondary-100 rounded-full">
                   <svg className="w-8 h-8 text-secondary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

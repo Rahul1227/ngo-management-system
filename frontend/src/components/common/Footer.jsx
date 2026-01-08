@@ -55,7 +55,7 @@ const Footer = () => {
             <ul className="space-y-2 text-sm">
               <li className="flex items-start">
                 <span className="text-primary-400 mr-2">📧</span>
-                <span>nss@iitr.ac.in</span>
+                <span>rahul_y@cs.iitr.ac.in</span>
               </li>
               <li className="flex items-start">
                 <span className="text-primary-400 mr-2">📍</span>
