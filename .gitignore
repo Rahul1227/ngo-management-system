@@ -1,0 +1,7 @@
+# ignore env files everywhere
+.env
+
+# ignore node modules everywhere
+node_modules/
+
+guide.pdf
