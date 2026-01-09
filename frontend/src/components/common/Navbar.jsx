@@ -13,11 +13,19 @@ const Navbar = () => {
     setIsMenuOpen(false);
   };
 
+  // decide where logo should go
+  const logoTarget = user
+    ? user.role === "admin"
+      ? "/admin/dashboard"
+      : "/user/dashboard"
+    : "/";
+
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto container-padding">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
+
           <Link to="/" className="flex items-center space-x-3">
             <img
               src="/assets/images/logo.png"
@@ -42,8 +50,10 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
+            {/* Home link — always allowed */}
             <Link
               to="/"
+              state={{ allowHome: true }}
               className="text-gray-700 hover:text-primary-600 font-medium transition-colors"
             >
               Home
@@ -142,6 +152,7 @@ const Navbar = () => {
             <div className="flex flex-col space-y-4">
               <Link
                 to="/"
+                state={{ allowHome: true }}
                 onClick={() => setIsMenuOpen(false)}
                 className="text-gray-700 hover:text-primary-600 font-medium transition-colors py-2"
               >

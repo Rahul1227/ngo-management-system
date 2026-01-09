@@ -1,7 +1,7 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
-// Layout Components
+// Layout
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -14,97 +14,95 @@ import UserDashboardPage from './pages/UserDashboardPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import NotFound from './pages/NotFound';
 
-// User Components
+// User
 import DonationForm from './components/user/DonationForm';
 import DonationHistory from './components/user/DonationHistory';
 import UserProfile from './components/user/UserProfile';
 
-// Admin Components
+// Admin
 import RegistrationList from './components/admin/RegistrationList';
 import DonationList from './components/admin/DonationList';
 
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          
-          <main className="flex-grow">
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
 
-              {/* User Protected Routes */}
-              <Route 
-                path="/user/dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <UserDashboardPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/user/profile" 
-                element={
-                  <ProtectedRoute>
-                    <UserProfile />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/user/donate" 
-                element={
-                  <ProtectedRoute>
-                    <DonationForm />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/user/donations" 
-                element={
-                  <ProtectedRoute>
-                    <DonationHistory />
-                  </ProtectedRoute>
-                } 
-              />
+        <main className="flex-grow">
+          <Routes>
+            {/* Public */}
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
-              {/* Admin Protected Routes */}
-              <Route 
-                path="/admin/dashboard" 
-                element={
-                  <ProtectedRoute adminOnly>
-                    <AdminDashboardPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/admin/registrations" 
-                element={
-                  <ProtectedRoute adminOnly>
-                    <RegistrationList />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/admin/donations" 
-                element={
-                  <ProtectedRoute adminOnly>
-                    <DonationList />
-                  </ProtectedRoute>
-                } 
-              />
+            {/* User */}
+            <Route
+              path="/user/dashboard"
+              element={
+                <ProtectedRoute>
+                  <UserDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/user/profile"
+              element={
+                <ProtectedRoute>
+                  <UserProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/user/donate"
+              element={
+                <ProtectedRoute>
+                  <DonationForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/user/donations"
+              element={
+                <ProtectedRoute>
+                  <DonationHistory />
+                </ProtectedRoute>
+              }
+            />
 
-              {/* 404 Route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
+            {/* Admin */}
+            <Route
+              path="/admin/dashboard"
+              element={
+                <ProtectedRoute adminOnly>
+                  <AdminDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/registrations"
+              element={
+                <ProtectedRoute adminOnly>
+                  <RegistrationList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/donations"
+              element={
+                <ProtectedRoute adminOnly>
+                  <DonationList />
+                </ProtectedRoute>
+              }
+            />
 
-          <Footer />
-        </div>
-      </Router>
+            {/* 404 */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+
+        <Footer />
+      </div>
     </AuthProvider>
   );
 }
