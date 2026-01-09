@@ -1,6 +1,7 @@
 import Hero from './Hero';
 import Features from './Features';
 import About from './About';
+import Chatbot from '../common/Chatbot';
 
 const LandingPage = () => {
   return (
@@ -8,6 +9,7 @@ const LandingPage = () => {
       <Hero />
       <Features />
       <About />
+      <Chatbot/>
     </div>
   );
 };

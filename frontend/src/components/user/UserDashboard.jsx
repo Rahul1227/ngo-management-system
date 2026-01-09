@@ -5,6 +5,7 @@ import { userService } from '../../services/userService';
 import Loader from '../common/Loader';
 import Card from '../common/Card';
 import { useLocation } from 'react-router-dom';
+import Chatbot from '../common/Chatbot';
 
 const UserDashboard = () => {
   const { user } = useAuth();
@@ -140,6 +141,8 @@ const UserDashboard = () => {
           </Card>
         </div>
       </div>
+      {/* Add Chatbot */}
+    <Chatbot />
     </div>
   );
 };
