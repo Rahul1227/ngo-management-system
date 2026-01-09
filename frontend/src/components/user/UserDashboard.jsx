@@ -140,9 +140,61 @@ const UserDashboard = () => {
             </Link>
           </Card>
         </div>
+
+        {/* Registration Info */}
+{profile?.registration && (
+  <Card className="mt-8">
+    <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+      <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary-100 text-primary-600">
+        📝
+      </span>
+      Registration Details
+    </h3>
+
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Registered On */}
+      <div className="bg-gray-50 rounded-xl p-4">
+        <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">
+          Registered On
+        </p>
+        <p className="text-base font-semibold text-gray-900">
+          {new Date(
+            profile.registration.registrationDate
+          ).toLocaleDateString()}
+        </p>
       </div>
-      {/* Add Chatbot */}
-    <Chatbot />
+
+      {/* Cause */}
+      <div className="bg-gray-50 rounded-xl p-4">
+        <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">
+          Cause
+        </p>
+        <p className="text-base font-semibold text-gray-900">
+          {profile.registration.causeName}
+        </p>
+      </div>
+
+      {/* Status */}
+      <div className="bg-gray-50 rounded-xl p-4 flex flex-col justify-center">
+        <p className="text-xs uppercase tracking-wide text-gray-500 mb-2">
+          Status
+        </p>
+        <span
+          className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-semibold ${
+            profile.registration.status === 'active'
+              ? 'bg-green-100 text-green-700'
+              : 'bg-red-100 text-red-700'
+          }`}
+        >
+          {profile.registration.status}
+        </span>
+      </div>
+    </div>
+  </Card>
+)}
+
+      </div>
+      <Chatbot/>
     </div>
   );
 };

@@ -8,20 +8,35 @@ const DonationList = () => {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
+
   const [filters, setFilters] = useState({
     paymentStatus: '',
-    page: 1,
   });
+
+  // NEW STATE (logic only)
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     fetchDonations();
-  }, [filters]);
+  }, [filters, page]);
 
   const fetchDonations = async () => {
     setLoading(true);
     try {
-      const response = await adminService.getDonations(filters);
-      setDonations(response.donations);
+      const response = await adminService.getDonations({
+        ...filters,
+        page,
+      });
+
+      setDonations(prev =>
+        page === 1 ? response.donations : [...prev, ...response.donations]
+      );
+
+      // backend sends 10 per page
+      if (response.donations.length < 10) {
+        setHasMore(false);
+      }
     } catch (error) {
       console.error('Error fetching donations:', error);
     } finally {
@@ -85,7 +100,7 @@ const DonationList = () => {
               All Donations
             </h1>
             <p className="text-gray-600 mt-2">
-              {donations.length} donation(s) found
+              {donations.length} donation(s) loaded
             </p>
           </div>
           <Button
@@ -105,7 +120,12 @@ const DonationList = () => {
             </label>
             <select
               value={filters.paymentStatus}
-              onChange={(e) => setFilters({ ...filters, paymentStatus: e.target.value, page: 1 })}
+              onChange={(e) => {
+                setPage(1);
+                setHasMore(true);
+                setDonations([]);
+                setFilters({ paymentStatus: e.target.value });
+              }}
               className="input max-w-xs"
             >
               <option value="">All Status</option>
@@ -122,51 +142,70 @@ const DonationList = () => {
             <p className="text-gray-600">No donations found</p>
           </Card>
         ) : (
-          <Card className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">User</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Amount</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Status</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Attempted</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Completed</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Payment ID</th>
-                </tr>
-              </thead>
-              <tbody>
-                {donations.map((donation) => (
-                  <tr key={donation._id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-3 px-4">
-                      <p className="font-medium text-gray-900">{donation.userId?.fullName || 'N/A'}</p>
-                      <p className="text-xs text-gray-500">{donation.userId?.email || 'N/A'}</p>
-                    </td>
-                    <td className="py-3 px-4">
-                      <p className="font-semibold text-gray-900">₹{donation.amount}</p>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className={`badge ${getStatusBadge(donation.paymentStatus)}`}>
-                        {donation.paymentStatus}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      <p className="text-sm text-gray-600">{formatDate(donation.attemptedAt)}</p>
-                    </td>
-                    <td className="py-3 px-4">
-                      <p className="text-sm text-gray-600">
-                        {donation.completedAt ? formatDate(donation.completedAt) : '-'}
-                      </p>
-                    </td>
-                    <td className="py-3 px-4">
-                      <p className="text-xs font-mono text-gray-600">
-                        {donation.razorpayPaymentId || '-'}
-                      </p>
-                    </td>
+          <>
+            <Card className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 px-4">User</th>
+                    <th className="text-left py-3 px-4">Amount</th>
+                    <th className="text-left py-3 px-4">Status</th>
+                    <th className="text-left py-3 px-4">Attempted</th>
+                    <th className="text-left py-3 px-4">Completed</th>
+                    <th className="text-left py-3 px-4">Payment ID</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </Card>
+                </thead>
+                <tbody>
+                  {donations.map((donation) => (
+                    <tr
+                      key={donation._id}
+                      className="border-b border-gray-100 hover:bg-gray-50"
+                    >
+                      <td className="py-3 px-4">
+                        <p className="font-medium">
+                          {donation.userId?.fullName || 'N/A'}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {donation.userId?.email || 'N/A'}
+                        </p>
+                      </td>
+                      <td className="py-3 px-4">
+                        ₹{donation.amount}
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className={`badge ${getStatusBadge(donation.paymentStatus)}`}>
+                          {donation.paymentStatus}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        {formatDate(donation.attemptedAt)}
+                      </td>
+                      <td className="py-3 px-4">
+                        {donation.completedAt
+                          ? formatDate(donation.completedAt)
+                          : '-'}
+                      </td>
+                      <td className="py-3 px-4 font-mono text-xs">
+                        {donation.razorpayPaymentId || '-'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Card>
+
+            {/* Load More */}
+            {hasMore && (
+              <div className="mt-6 text-center">
+                <Button
+                  onClick={() => setPage(p => p + 1)}
+                  loading={loading}
+                >
+                  Load More
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
