@@ -5,29 +5,61 @@ import Loader from '../common/Loader';
 import Button from '../common/Button';
 
 const RegistrationList = () => {
-  const [registrations, setRegistrations] = useState([]);
+  const [allRegistrations, setAllRegistrations] = useState([]); // All data
+  const [filteredRegistrations, setFilteredRegistrations] = useState([]); // Filtered data
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [filters, setFilters] = useState({
     status: '',
     search: '',
-    page: 1,
   });
 
+  // Fetch all registrations once
   useEffect(() => {
     fetchRegistrations();
-  }, [filters]);
+  }, []);
+
+  // Filter whenever filters change (with debouncing for search)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      filterData();
+    }, 300); // Debounce search by 300ms
+
+    return () => clearTimeout(timer);
+  }, [filters, allRegistrations]);
 
   const fetchRegistrations = async () => {
     setLoading(true);
     try {
-      const response = await adminService.getRegistrations(filters);
-      setRegistrations(response.data.registrations);
+      const response = await adminService.getRegistrations();
+      setAllRegistrations(response.registrations);
+      setFilteredRegistrations(response.registrations);
     } catch (error) {
       console.error('Error fetching registrations:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const filterData = () => {
+    let filtered = [...allRegistrations];
+
+    // Filter by status
+    if (filters.status) {
+      filtered = filtered.filter(reg => reg.status === filters.status);
+    }
+
+    // Filter by search (name or email)
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase();
+      filtered = filtered.filter(reg => {
+        const fullName = reg.userId?.fullName?.toLowerCase() || '';
+        const email = reg.userId?.email?.toLowerCase() || '';
+        return fullName.includes(searchLower) || email.includes(searchLower);
+      });
+    }
+
+    setFilteredRegistrations(filtered);
   };
 
   const handleExport = async () => {
@@ -58,7 +90,7 @@ const RegistrationList = () => {
     });
   };
 
-  if (loading && registrations.length === 0) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader size="lg" text="Loading registrations..." />
@@ -75,7 +107,7 @@ const RegistrationList = () => {
               All Registrations
             </h1>
             <p className="text-gray-600 mt-2">
-              {registrations.length} registration(s) found
+              Showing {filteredRegistrations.length} of {allRegistrations.length} registration(s)
             </p>
           </div>
           <Button
@@ -97,9 +129,9 @@ const RegistrationList = () => {
               <input
                 type="text"
                 value={filters.search}
-                onChange={(e) => setFilters({ ...filters, search: e.target.value, page: 1 })}
+                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                 className="input"
-                placeholder="Search..."
+                placeholder="Type to search..."
               />
             </div>
             <div>
@@ -108,7 +140,7 @@ const RegistrationList = () => {
               </label>
               <select
                 value={filters.status}
-                onChange={(e) => setFilters({ ...filters, status: e.target.value, page: 1 })}
+                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
                 className="input"
               >
                 <option value="">All Status</option>
@@ -120,9 +152,11 @@ const RegistrationList = () => {
         </Card>
 
         {/* Registrations Table */}
-        {registrations.length === 0 ? (
+        {filteredRegistrations.length === 0 ? (
           <Card className="text-center py-12">
-            <p className="text-gray-600">No registrations found</p>
+            <p className="text-gray-600">
+              {filters.search || filters.status ? 'No registrations match your filters' : 'No registrations found'}
+            </p>
           </Card>
         ) : (
           <Card className="overflow-x-auto">
@@ -137,7 +171,7 @@ const RegistrationList = () => {
                 </tr>
               </thead>
               <tbody>
-                {registrations.map((reg) => (
+                {filteredRegistrations.map((reg) => (
                   <tr key={reg._id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="py-3 px-4">
                       <p className="font-medium text-gray-900">{reg.userId?.fullName || 'N/A'}</p>

@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
+import { toast } from 'react-toastify'; // Already imported
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
   const { login } = useAuth();
@@ -19,13 +19,11 @@ const Login = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     try {
       const response = await authService.login(formData);
@@ -33,15 +31,21 @@ const Login = () => {
       if (response.success) {
         login(response.token, response.user);
         
+        // Show success toast
+        toast.success(`Welcome back, ${response.user.fullName}! 👋`);
+        
         // Redirect based on role
-        if (response.user.role === 'admin') {
-          navigate('/admin/dashboard');
-        } else {
-          navigate('/user/dashboard');
-        }
+        setTimeout(() => {
+          if (response.user.role === 'admin') {
+            navigate('/admin/dashboard');
+          } else {
+            navigate('/user/dashboard');
+          }
+        }, 1000);
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      // Show error toast instead of state
+      toast.error(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -65,12 +69,6 @@ const Login = () => {
         </div>
 
         <div className="card">
-          {error && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-800">{error}</p>
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">

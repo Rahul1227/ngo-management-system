@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {toast} from 'react-toastify'
 import { donationService } from "../../services/donationService";
 import Card from "../common/Card";
 import Button from "../common/Button";
@@ -68,13 +69,13 @@ const DonationForm = () => {
               });
 
               if (verifyResponse.success) {
-                // Fixed: removed .data
-                alert("Payment successful! Thank you for your donation.");
-                navigate("/user/donations");
+                toast.success("🎉 Payment successful! Thank you for your donation.", { // Changed
+                  autoClose: 5000,
+                });
+                setTimeout(() => navigate("/user/donations"), 1000);
               }
             } catch (error) {
-              console.error("Payment verification failed:", error);
-              alert("Payment verification failed. Please contact support.");
+              toast.error("❌ Payment verification failed. Please contact support."); // Changed
               navigate("/user/donations");
             }
           },
@@ -89,7 +90,7 @@ const DonationForm = () => {
           modal: {
             ondismiss: () => {
               setLoading(false);
-              alert("Payment cancelled");
+              toast.warning("⚠️ Payment cancelled");
             },
           },
         };

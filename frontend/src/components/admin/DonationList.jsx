@@ -21,7 +21,7 @@ const DonationList = () => {
     setLoading(true);
     try {
       const response = await adminService.getDonations(filters);
-      setDonations(response.data.donations);
+      setDonations(response.donations);
     } catch (error) {
       console.error('Error fetching donations:', error);
     } finally {

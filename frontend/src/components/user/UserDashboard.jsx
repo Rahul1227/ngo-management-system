@@ -4,16 +4,18 @@ import { useAuth } from '../../context/AuthContext';
 import { userService } from '../../services/userService';
 import Loader from '../common/Loader';
 import Card from '../common/Card';
+import { useLocation } from 'react-router-dom';
 
 const UserDashboard = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState(null);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [location]);
 
   const fetchDashboardData = async () => {
     try {
@@ -22,8 +24,8 @@ const UserDashboard = () => {
         userService.getDonations(),
       ]);
 
-      setProfile(profileRes.data);
-      setStats(donationsRes.data.stats);
+      setProfile(profileRes);
+      setStats(donationsRes.stats);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
@@ -137,31 +139,6 @@ const UserDashboard = () => {
             </Link>
           </Card>
         </div>
-
-        {/* Registration Info */}
-        {profile?.registration && (
-          <Card className="mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Registration Details</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-gray-600">Registered On</p>
-                <p className="font-medium text-gray-900">
-                  {new Date(profile.registration.registrationDate).toLocaleDateString()}
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-600">Cause</p>
-                <p className="font-medium text-gray-900">{profile.registration.causeName}</p>
-              </div>
-              <div>
-                <p className="text-gray-600">Status</p>
-                <span className={`badge ${profile.registration.status === 'active' ? 'badge-success' : 'badge-failed'}`}>
-                  {profile.registration.status}
-                </span>
-              </div>
-            </div>
-          </Card>
-        )}
       </div>
     </div>
   );
