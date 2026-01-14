@@ -117,6 +117,8 @@ Expiry: Any future date
 ### 💳 Payment Gateway
 ![Payment Gateway](./docs/screenshots/payment-gateway.png)
 *Secure Razorpay payment modal for processing donations*
+![Payment Gateway](./docs/screenshots/payment-gateway1.png)
+*Successful payment*
 
 ### 📜 Donation History
 ![Donation History](./docs/screenshots/donation-history.png)
